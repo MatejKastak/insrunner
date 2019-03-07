@@ -2,6 +2,8 @@ import os
 
 from debug import debug_enabled, debug_print
 
+# TODO: Add option to delete/keep file after work is done
+
 def r(cmd):
     if debug_enabled:
         debug_print(cmd)

@@ -28,7 +28,13 @@ class Debugger:
     def jump_to_main(self):
         self.command_wrapper('dr ' + self.get_ip() + ' = main')
 
+    def seek_to_ip(self):
+        # TODO: Seek to instruction pointer
+        pass
+
     def emulate_instruction(self, i):
+        # TODO: Maybe don't jump to main just keep counter of instructions and after
+        # some reasonable ammount jump to main
         self.jump_to_main()
         self.write_instruction(i)
         self.exec_instruction()

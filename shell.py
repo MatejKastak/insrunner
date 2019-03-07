@@ -8,6 +8,8 @@ from colors import Color
 class Shell():
 
     def __init__(self, dbg):
+        # Keep list of instructions for history
+        # Keep history of registers? Can get memory intensive?
         self.dbg = dbg
         self.commands_dict = {
             'exit': self.stop,
@@ -15,12 +17,16 @@ class Shell():
             'registers': self.print_registers,
             'memory': self.print_memory,
             'clear': self.clear_screen,
+            # Add command to pass a string to radare?
         }
         self.running = True
         signal.signal(signal.SIGINT, self.int_handler)
         Color.print(Color.RED, 'Initialized shell')
 
     def print_prompt(self):
+        # TODO: Ability to change prompt
+        # TODO: Ability to always clear before command, this should be nice
+        # to keep screen clean and look like UI
         print('> ', end='')
 
     def clear_screen(self):
@@ -57,6 +63,8 @@ class Shell():
                 print(k + ': ' + str(v))
 
     def print_memory(self):
+        # TODO: We prob dont need json format
+        # Just get the hexdump already formatted and color differences?? :D
         pass
 
     def print_registers(self):
