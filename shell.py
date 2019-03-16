@@ -13,13 +13,15 @@ class Shell():
         # TODO: Keep history of registers? Can get memory intensive?
         self.dbg = dbg
         self.commands_dict = {
+            # Change funcion pointers to Command objects with description
             'exit': self.stop,
             'quit': self.stop,
+            'help': self.print_help,
             'registers': self.print_diff,
             'memory': self.print_memory,
             'clear': self.clear_screen,
             'history': self.print_history,
-            'zero': self.dbg.zero_registers
+            'zero': self.zero_registers,
             # Add command to pass a string to radare?
         }
 
@@ -37,6 +39,11 @@ class Shell():
     def debug(self):
         import ipdb
         ipdb.set_trace()
+
+    def print_help(self):
+        print('Commands:')
+        for c in self.commands_dict.keys():
+            print(c)
 
     def print_prompt(self):
         # TODO: Ability to change prompt
@@ -82,6 +89,7 @@ class Shell():
         self.print_register_diff(self.before_regs, self.after_regs)
 
     def print_diff(self):
+        self.after_regs = self.dbg.get_registers()
         self.print_register_diff(self.before_regs, self.after_regs)
 
     def print_register_diff(self, a, b):
@@ -97,8 +105,10 @@ class Shell():
         # Just get the hexdump already formatted and color differences?? :D
         pass
 
-    def print_registers(self):
-        pass
+    def zero_registers(self):
+        self.before_regs = self.dbg.get_registers()
+        self.dbg.zero_registers()
+        self.after_regs = self.dbg.get_registers()
 
     def start(self):
         while(self.running):

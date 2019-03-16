@@ -19,7 +19,18 @@ class Debugger:
         debug_print(cmd)
         return self.r2.cmd(cmd)
 
-    def get_ip(self):
+    def get_control_registers(self):
+        return [self.get_pc(), self.get_sp(), self.get_fp()]
+
+    def get_fp(self):
+        # Todo: Determine the right register based on the architecture
+        return 'rbp'
+
+    def get_sp(self):
+        # Todo: Determine the right register based on the architecture
+        return 'rsp'
+
+    def get_pc(self):
         # Todo: Determine the right register based on the architecture
         return 'rip'
 
@@ -27,9 +38,9 @@ class Debugger:
         self.command_wrapper('s main')
 
     def jump_to_main(self):
-        self.command_wrapper('dr ' + self.get_ip() + ' = main')
+        self.command_wrapper('dr ' + self.get_pc() + ' = main')
 
-    def seek_to_ip(self):
+    def seek_to_pc(self):
         # TODO: Seek to instruction pointer
         pass
 
@@ -49,6 +60,8 @@ class Debugger:
 
     def zero_registers(self):
         for reg in self.get_registers().keys():
+            if reg in self.get_control_registers():
+                continue
             self.command_wrapper('dr {} = 0'.format(reg))
 
     def exec_instruction(self, count=1):
