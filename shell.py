@@ -1,9 +1,9 @@
 import signal
 import sys
-import debugger
 
 from debug import debug_print
 from colors import Color
+
 
 class Shell():
 
@@ -38,7 +38,6 @@ class Shell():
 
         for c in commands:
             self.execute_command(c.strip())
-        new_reg_state = self.dbg.get_registers()
 
     def execute_command(self, command):
         debug_print(command)

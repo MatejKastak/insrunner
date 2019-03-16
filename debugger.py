@@ -2,14 +2,15 @@ import r2pipe
 
 from debug import debug_print, debug_enabled
 
+
 class Debugger:
 
     def __init__(self, file_name):
-        if debug_enabled:
+        if debug_enabled():
+            self.r2 = r2pipe.open(file_name)
+        else:
             # Close the stderr, so we don't see any warninigs
             self.r2 = r2pipe.open(file_name, ['-2'])
-        else:
-            self.r2 = r2pipe.open(file_name)
         self.command_wrapper('aa')
         self.command_wrapper('ood')
         self.seek_to_main()
@@ -33,8 +34,8 @@ class Debugger:
         pass
 
     def emulate_instruction(self, i):
-        # TODO: Maybe don't jump to main just keep counter of instructions and after
-        # some reasonable ammount jump to main
+        # TODO: Maybe don't jump to main just keep counter of instructions and
+        # after some reasonable ammount jump to main
         self.jump_to_main()
         self.write_instruction(i)
         self.exec_instruction()
@@ -52,4 +53,3 @@ class Debugger:
 
     def get_memory(self):
         return self.r2.cmdj('drj')
-        

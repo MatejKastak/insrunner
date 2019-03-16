@@ -4,13 +4,14 @@ from debug import debug_enabled, debug_print
 
 # TODO: Add option to delete/keep file after work is done
 
+
 def r(cmd):
     if debug_enabled:
         debug_print(cmd)
         os.system(cmd)
     else:
         os.system(cmd + ' > /dev/null 2>&1')
-    
+
 
 def create_elf(file_name='source'):
     template = """ .global main
@@ -21,7 +22,7 @@ def create_elf(file_name='source'):
 _start:
 __start:
 main:
-	.skip 0x200, 0
+    .skip 0x200, 0
 """
     assembly_file = file_name + '.as'
     object_file = file_name + '.o'

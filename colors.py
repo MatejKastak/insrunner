@@ -19,4 +19,3 @@ class Color:
 
     def print(c, s):
         print(c + s + Color.RESET)
-
