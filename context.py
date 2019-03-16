@@ -12,3 +12,4 @@ class Singleton(type):
 class Context(metaclass=Singleton):
     def __init__(self):
         self.debug_enabled = False
+        self.clear_before_command = False

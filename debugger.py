@@ -17,7 +17,7 @@ class Debugger:
 
     def command_wrapper(self, cmd):
         debug_print(cmd)
-        self.r2.cmd(cmd)
+        return self.r2.cmd(cmd)
 
     def get_ip(self):
         # Todo: Determine the right register based on the architecture
@@ -42,11 +42,18 @@ class Debugger:
 
     def write_instruction(self, i):
         r2_cmd = 'wa {}'.format(i)
+        # TODO: Find a way to check if the instruction is valid
+        # right now we just try to write whatever is not a command
+        # and since we close stderr for radare2
         self.command_wrapper(r2_cmd)
 
+    def zero_registers(self):
+        for reg in self.get_registers().keys():
+            self.command_wrapper('dr {} = 0'.format(reg))
+
     def exec_instruction(self, count=1):
-        # for _ in range(count):
-        self.command_wrapper('ds')
+        for _ in range(count):
+            self.command_wrapper('ds')
 
     def get_registers(self):
         return self.r2.cmdj('drj')
