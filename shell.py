@@ -1,6 +1,7 @@
 import signal
 import sys
 
+from retdec import Retdec
 from context import Context
 from debug import debug_print
 from colors import Color
@@ -27,6 +28,8 @@ class Shell():
 
         self.before_regs = dbg.get_registers()
         self.after_regs = self.before_regs
+
+        self.retdec = Retdec()
 
         if Context().debug_enabled:
             self.commands_dict.update({
@@ -87,6 +90,11 @@ class Shell():
         self.after_regs = self.dbg.get_registers()
 
         self.print_register_diff(self.before_regs, self.after_regs)
+
+        if Context().generate_retdec_tests:
+            debug_print('Generating retdec test case')
+            self.retdec.generate_test(self.after_regs,
+                                      self.before_regs, command)
 
     def print_diff(self):
         self.after_regs = self.dbg.get_registers()
