@@ -1,6 +1,7 @@
 import os
 
 from debug import debug_enabled, debug_print
+from context import Context
 
 # TODO: Add option to delete/keep file after work is done
 
@@ -23,8 +24,10 @@ def remove_elf(file_name='source'):
 
 
 def create_elf(file_name='source', ins=None):
-    template = """.intel_syntax noprefix
-.global main
+    template = ''
+    if not Context().arm64:
+        template +='.intel_syntax noprefix\n'
+    template += """.global main
 .global _start
 .global __start
 
