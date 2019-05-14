@@ -14,3 +14,4 @@ class Context(metaclass=Singleton):
         self.debug_enabled = False
         self.clear_before_command = False
         self.generate_retdec_tests = False
+        self.arm64 = False
