@@ -1,28 +1,24 @@
+
 from debug import debug_print
+from context import Context
 
 
 class Retdec():
 
     def __init__(self, out_file='retdec_tests.cpp', header_comm=False):
+        self.ignored_regs = Context().arch.ignored_regs
         self.out_file = out_file
-
-        # TODO: temporary solution, change to architecture independed solution
-        self.ARCH_ARM64 = 0
-
-        self.translator_dict = {
-                self.ARCH_ARM64: 'Capstone2LlvmIrTranslatorArm64Tests',
-        }
 
     def append_test(self, str):
         debug_print('Appending test case to file: {}'.format(self.out_file))
 
     def generate_test(self, after_regs, before_regs, instruction):
         test_case = ''
-        test_case += self.generate_header()
-        test_case += self.generate_registers_set()
+        test_case += self.generate_header(instruction)
+        test_case += self.generate_registers_set(before_regs)
         test_case += self.generate_emulate(instruction)
         test_case += self.generate_registers_loaded()
-        test_case += self.generate_registers_stored()
+        test_case += self.generate_registers_stored(before_regs, after_regs)
         # TODO: Merge memory loads and stores to one function
         test_case += self.generate_memory_loaded()
         test_case += self.generate_memory_stored()
@@ -32,12 +28,18 @@ class Retdec():
 
         self.append_test(test_case)
 
-    def generate_header(self):
-        return 'TEST_P({}, ARM64_INS_MOV_r_r)\n{{\n'.format(
-            self.translator_dict[self.ARCH_ARM64])
+    def generate_header(self, instruction):
+        # TODO: try to get the operands from the opcode
+        return 'TEST_P({}, ARM64_INS_{}_r_r)\n{{\n'.format(
+            Context().arch.retdec_translator, instruction.split(' ')[0].upper())
 
-    def generate_registers_set(self):
-        set_regs = [] #['{ARM64_REG_X0, 0xffffffff},', '{ARM64_REG_X0, 0xffffffff},']
+    def generate_registers_set(self, before):
+        set_regs = []  #['{ARM64_REG_X0, 0xffffffff},', '{ARM64_REG_X0, 0xffffffff},']
+
+        for reg, val in before.items():
+            if reg not in self.ignored_regs and val != 0:
+                set_regs.append('{{ARM64_REG_{0}, {1:#016x}}},'.format(reg.upper(), val))
+
         if len(set_regs) != 0:
             return "\tsetRegisters({{\n\t\t{}\n\t}});\n".format(
                 '\n\t\t'.join(set_regs)
@@ -57,9 +59,12 @@ class Retdec():
             return '\tEXPECT_JUST_REGISTERS_LOADED({{\n\t\t{}\n\t}});\n'.format(
                 ', '.join(loaded_regs))
 
-    def generate_registers_stored(self):
-        # TODO: Generate register stores
-        stored_regs = ['{ARM64_REG_X0, 0xffffffff},', '{ARM64_REG_X0, 0xffffffff},']
+    def generate_registers_stored(self, before, after):
+        stored_regs = []
+        for reg, val in after.items():
+            if reg not in self.ignored_regs and val != before[reg]:
+                stored_regs.append('{{ARM64_REG_{0}, {1:#016x}}},'.format(reg.upper(), val))
+
         if len(stored_regs) == 0:
             return '\tEXPECT_NO_REGISTERS_STORED();\n'
         else:

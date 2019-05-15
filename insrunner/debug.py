@@ -1,3 +1,6 @@
+# Debug helper functions
+# Author: Matej Kastak
+
 from colors import Color
 from context import Context
 

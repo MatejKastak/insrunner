@@ -1,3 +1,6 @@
+# Shell interface
+# Author: Matej Kastak
+
 import signal
 import sys
 

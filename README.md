@@ -14,12 +14,18 @@ That's it.
 git clone https://github.com/MatejKastak/insrunner && cd insrunner
 
 # Make sure you have installed r2 https://github.com/radare/radare2
+# For arm64 you may need keystone plugin for r2
+# Install keystone for your distribution
+# r2pm -i keystone
+# If this approach does not work please try GAS backend eg. -b gas
 
-# If you want create virtualenv
-sudo pip install r2pipe
+# Create virtualenv
+virtualenv --python=/bin/python3.7 venv
+source venv/bin/activate
+pip install -r requirements.txt
 
 # Start your assembly journey
-./main.py
+python insrunner
 
 # Fingers crossed, nothing breaks at this point
 ```

@@ -1,9 +1,15 @@
+# Elf helper functions
+# Author: Matej Kastak
+
 import os
 
 from debug import debug_enabled, debug_print
 from context import Context
+from subprocess import check_call, CalledProcessError
 
-# TODO: Add option to delete/keep file after work is done
+
+def rr(cmd):
+    return check_call(cmd, shell=True)
 
 
 def r(cmd):
@@ -25,8 +31,8 @@ def remove_elf(file_name='source'):
 
 def create_elf(file_name='source', ins=None):
     template = ''
-    if not Context().arm64:
-        template +='.intel_syntax noprefix\n'
+    if not Context().is_arm():
+        template += '.intel_syntax noprefix\n'
     template += """.global main
 .global _start
 .global __start
@@ -52,7 +58,11 @@ main:
     with open(assembly_file, 'w') as source_file:
         source_file.write(template)
 
-    r("{} {} -o {}".format(assembler, assembly_file, object_file))
-    r("{} {} -o {}".format(linker, object_file, binary_file))
+    try:
+        rr("{} {} -o {}".format(assembler, assembly_file, object_file))
+        rr("{} {} -o {}".format(linker, object_file, binary_file))
+    except CalledProcessError as e:
+        debug_print('Command failed with err: {}'.format(e))
+        return None
 
     return file_name

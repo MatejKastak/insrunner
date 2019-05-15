@@ -1,11 +1,24 @@
+# Assembling based on GNU assembler
+# Author: Matej Kastak
+
 import r2pipe
 
 from debug import debug_print, debug_enabled
+import elf
+from context import Context
 
 
 class Debugger:
 
     def __init__(self, file_name):
+        self.initialize_r2()
+
+    def initialize_r2(self, ins=None, file_name='source'):
+        elf.remove_elf()
+
+        if elf.create_elf(file_name, ins) is None:
+            return
+
         if debug_enabled():
             self.r2 = r2pipe.open(file_name)
         else:
@@ -23,16 +36,13 @@ class Debugger:
         return [self.get_pc(), self.get_sp(), self.get_fp()]
 
     def get_fp(self):
-        # Todo: Determine the right register based on the architecture
-        return 'rbp'
+        return Context().arch.get_fp()
 
     def get_sp(self):
-        # Todo: Determine the right register based on the architecture
-        return 'rsp'
+        return Context().arch.get_sp()
 
     def get_pc(self):
-        # Todo: Determine the right register based on the architecture
-        return 'rip'
+        return Context().arch.get_pc()
 
     def seek_to_main(self):
         self.command_wrapper('s main')
@@ -47,8 +57,9 @@ class Debugger:
     def emulate_instruction(self, i):
         # TODO: Maybe don't jump to main just keep counter of instructions and
         # after some reasonable ammount jump to main
+        self.initialize_r2(i)
         self.jump_to_main()
-        self.write_instruction(i)
+        # self.write_instruction(i)
         self.exec_instruction()
 
     def write_instruction(self, i):
