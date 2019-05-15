@@ -7,6 +7,7 @@ from arch.x86 import ArchitectureX86_64
 from arch.x86 import ArchitectureX86
 
 
+# Based on: https://sourcemaking.com/design_patterns/singleton/python/1
 class Singleton(type):
     def __init__(cls, name, bases, attrs, **kwargs):
         super().__init__(name, bases, attrs)

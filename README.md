@@ -1,7 +1,7 @@
 # Insrunner
 
 This program gives you ability to run instruction and check registers/memory.
-It provides convenient interface to work with assembly.
+It provides convenient interface to work with assembly. Inspired by [https://github.com/hugsy/cemu/](cemu).
 
 ## Dependencies
 
